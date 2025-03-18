@@ -29,8 +29,6 @@ Each implementation **aligns with a specific spec version**, ensuring compliance
 Each implementation release may claim which Specs verrsion it supports. For example: 
 ```
 # DataJoint Python v1.2.0 - Supports Spec v2.2
-- Implements new storage backend integration (DSEP-005).
-- Enhances metadata schema for computed tables.
 - Backward-compatible with Spec v2.1.
 ```
 
