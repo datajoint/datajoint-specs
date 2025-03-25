@@ -5,7 +5,7 @@
 * Accepted:  2025-04-01 (projected)
 * Authors:
   * [Dimitri Yatsenko](https://github.com/dimitri-yatsenko)
-* Impelements DSEPs:
+* Implements DSEPs:
   * None
 * Description: First release of DataJoint Specs. Versioning starts with 2.0 to stay ahead of current implementations, although implementation versions are independent of the specs versions.
 
@@ -26,21 +26,42 @@ By following the **DataJoint Specs**, users and developers can:
 
 ## Purpose of DataJoint
 
-**DataJoint extends the relational database model into a computational database**, where some tables store **raw inputs**, while others define **computations and store computed results**. This approach enables **structured, scalable, and reproducible** scientific data processing.
+**DataJoint is a framework that transforms relational databases into computational engines for scientific workflows.**
 
-A **computational database** serves as a **scientific data pipeline**, explicitly defining dependencies between **data acquisition, transformation, and analysis**. DataJoint ensures **data integrity**, supports **ACID-compliant transactions**, and integrates seamlessly with **Python**. It also extends relational databases to manage **complex scientific data types** (e.g., multidimensional arrays) and embeds computations via **foreign-key dependencies**.
+At its core, **DataJoint extends the traditional relational data model into a _computational database_**, where some tables contain raw input data, while others define computations and store their results.
+This makes it possible to express entire scientific workflows—data acquisition, transformation, analysis—as structured, executable pipelines directly within the database.
 
-By combining the rigor of **relational databases** with **built-in computational workflows**, DataJoint empowers researchers to **design, implement, and share scalable, reproducible data pipelines**.
+In this architecture, the database becomes more than a storage system.
+It becomes a **living pipeline** that encodes the logic and lineage of scientific work:
 
+- **Structured**: with explicit schema and clear data relationships  
+- **Scalable**: supporting high-throughput, high-dimensional experimental data  
+- **Reproducible**: with every step recorded, auditable, and rerunnable  
+
+DataJoint maintains the rigor of relational databases—ensuring **data integrity, ACID-compliant transactions, and declarative query logic**—but extends their scope to meet the demands of modern science:
+
+- **Computations become first-class citizens** in the schema, tied to data via dependency graphs  
+- Complex scientific data types (e.g., multidimensional arrays, images, time series) are modeled and managed natively  
+- Data pipelines are encoded explicitly, enabling automation, parallelism, and long-term reproducibility
+
+This opens up powerful new capabilities for scientific teams: collaborative development of shared workflows, automated processing at scale, and systematic management of data provenance.
+
+Just as spreadsheet formulas allow for structured, cascading transformations of data, **DataJoint enables scientists to define and automate sophisticated data workflows**—but at the scale of institutions, consortia, and national data infrastructures.
+
+By unifying computational logic and relational data modeling, **DataJoint provides a foundation for building high-integrity, high-performance scientific data ecosystems.**
 
 ## Open-Source Development
 
-This document specifies the **DataJoint open-source framework**, a **free, Python-based library** that enables scientists to design, manage, and query relational data pipelines. It provides tools for **defining schemas, tracking dependencies, and integrating computations**.
+This document specifies DataJoint as an open standard DataJoint as an open standard.
+The implementation of many of its components is conducted in open source, although some component may be developed privately while still claiming compliance to this standard.
+
+The reference implementation is centered around [DataJoint-Python](https://github.com/datajont/datajoint-python), which implements a **free, Python-based library and API** that enables scientists to design, manage, and query relational data pipelines.
+It provides tools for **defining schemas, tracking dependencies, and integrating computations**.
 
 Setting up a fully operational scientific pipeline requires configuring **databases, object storage, compute infrastructure, and workflow automation**.
 
 While the open-source framework defines **computational data pipelines**, it does **not orchestrate computations or schedule jobs**. Users may:
-- Implement their own orchestration.
+- Implement their own orchestration processes or scripts for manual execution.
 - Integrate with **external workflow management systems** (e.g., Apache Airflow, Nextflow) for job scheduling and execution.
 - Use DataJoint's platform for a fully managed service.
 
@@ -90,6 +111,8 @@ DataJoint adopts familiar terms from relational database theory and clearly defi
 | **Query Expression** | A formal definition of a query expressed with [**query operators**](#query-operators)  acting on input tables to define a new output table.
 | **Fetch** | The execution of a query and transfer of results from server to client. |
 | **Transaction** | A sequence of database operations executed as an atomic, consistent, isolated, durable (ACID) unit. All operations succeed or fail together, with partial results invisible externally. |
+
+---
 
 ## Frequently Asked Questions
 
@@ -144,8 +167,9 @@ A fully functional DataJoint pipeline consists of the following key components:
 ---
 
 ### 1. Code Repository
-A **dedicated version-controlled repository** (e.g., **GitHub, GitLab, Bitbucket**, or a self-hosted `git` instance) serves as the **central hub** for managing pipeline development and execution. It stores:
-- **Pipeline definitions** – schemas, table structures, and computational dependencies.
+A **dedicated version-controlled repository** (e.g., **GitHub, GitLab, Bitbucket**, or a self-hosted `git` instance) serves as the **central hub** for managing pipeline development and execution.
+It stores:
+- **Pipeline definitions** – schemas, table structures, and computational dependencies, relying on the DataJoint Client API.
 - **Configuration settings** – database, storage, and execution parameters.
 - **Access control policies** – user permissions and security settings.
 - **Containerized environments** – reproducible execution setups.
@@ -165,7 +189,7 @@ The **database acts as the system of record** (authoritative source of truth, de
 - **Database administrators** configure access controls for security and compliance.
 - The **DataJoint Platform** provides **role-based access control (RBAC)** to efficiently manage permissions.
 
-### 3. Object Store
+### 3. Object Store (Optional)
 A **scalable storage backend** is required to manage **large scientific datasets** referenced in the relational database but stored externally.
 
 **Supported Storage Backends:**
@@ -223,7 +247,8 @@ Many research projects benefit from integrating DataJoint pipelines with:
 
 ## **Pipeline ≡ Python Package**
 
-A **DataJoint pipeline** is typically implemented as a **dedicated Python package**, where **modules correspond to database schemas**. This structure ensures that data, computations, and dependencies remain **organized, traceable, and reproducible**.
+A **DataJoint pipeline** is typically implemented as a **dedicated Python package**, where **modules correspond to database schemas**.
+This structure ensures that data, computations, and dependencies remain **organized, traceable, and reproducible**.
 
 A **DataJoint pipeline follows a directed acyclic graph (DAG) structure**, where:
 
@@ -403,7 +428,7 @@ These types **abstract and simplify** the underlying SQL data types provided by 
 
 This specification **prioritizes intuitive type names** (e.g., `uint8` instead of SQL’s `tinyint unsigned`) to improve usability for **scientific applications**.
 
-### **Supported Attribute Types**
+### **Core Attribute Types**
 
 | Category | Type | Description |
 | --- | --- | --- |
@@ -416,7 +441,7 @@ This specification **prioritizes intuitive type names** (e.g., `uint8` instead o
 | **Date** | `date` | ISO 8601 format. Special value `NOW` can be used as a default. |
 | **Time** | `timestamp` | Microsecond precision in UTC (ISO 8601). Special value `NOW` can be used as a default. |
 | **Binary Large Object (BLOB)** | `blob` | Stores large binary data inside the database. |
-| **External Object Reference** | `object` | A reference to an **external object** managed by DataJoint (e.g., a file or dataset stored in an object store or file system). |
+| **Object Reference** | `object` | A reference to an **external object** managed by DataJoint (e.g., a file or dataset stored in an object store or file system). |
 | **Custom Type** | `<adaptor_name>` | User-defined [type adaptors](#type-adaptors) for specialized data handling. |
 
 ### **Blob vs. Object**
@@ -425,48 +450,223 @@ This specification **prioritizes intuitive type names** (e.g., `uint8` instead o
 | `blob` | **Raw binary data stored inside the database** | **Database storage (e.g., MySQL, PostgreSQL BLOB columns)** |
 | `object` | **Externally stored files, datasets, or objects** | **File systems, object stores (S3, GCS, Azure Blob), or network storage (NFS, SMB)** |
 
+## Object Types
+A **DataJoint pipeline** follows a **hybrid storage model**, where:
+- The **relational database** manages **structured metadata, dependencies, and transactions**.
+- The **object store** handles **large, unstructured scientific data** (e.g., images, multidimensional arrays).
 
-## Type Adaptors
+This **scalable approach** maintains **fast querying, data integrity, and transactional consistency**, while enabling **flexible, distributed storage** of large datasets.
+
+### **How Object-Typed Fields Work**
+In DataJoint tables, the `object` datatype enables **object-augmented schemas**, where structured metadata in the database references externally stored objects. These objects are:
+- **Inserted, retrieved, and managed** like standard database attributes.
+- **Stored using a structured key-naming convention**.
+- **Tracked in the database with metadata** such as format, size, checksum, and version.
+
+### The `dj.Object` Interface
+
+To insert an object, the object field must receive an instance of a subclass of `dj.Object`. This subclass must implement:
+
+| **Method** | **Description** |
+|------------|----------------|
+| `put(self, store, key) -> dict` | Writes the object to storage and returns metadata (checksum, version, timestamp). |
+| `get(cls, store, key) -> "dj.Object"` | Reads the object from storage and reconstructs it. |
+| `get_meta(self) -> dict` | Retrieves metadata (size, checksum, version). |
+| `verify(self, store, key) -> bool` | Confirms that the object exists and is valid. |
+
+### **Metadata Stored in the Database**
+Each stored object includes metadata for **efficient retrieval, validation, and tracking**:
+- **Object key** – Unique structured reference to the object.
+- **File format/extension** – The storage format (e.g., `.zarr`, `.tiff`).
+- **Size** – Object size in bytes.
+- **Checksum** – Hash for data integrity verification.
+- **Version** – Versioning identifier (if applicable).
+
+## Custom Types
+Custom types allow DataJoint to **seamlessly integrate and manage diverse data types** as if they were stored directly in a database field.
+They handle the **conversion** between **complex scientific objects** (e.g. `networkx.Graph`, `zarr`, `png`) and **core attribute types**, ensuring compatibility with relational storage.
+DataJoint projects can define and maintain a collection of type adaptors that serve their aims.
+
+What Custom Types do:
+- **Enable flexible data handling** while maintaining database integrity.
+- **Convert non-standard data types** into a format storable in DataJoint tables.
+- **Retrieve stored data and reconstruct it** into its original form for use in computations.
+
+Key Benefts of Custom Types:
+- [x] Extend DataJoint's capabilities to support scientific data types.
+- [x] Ensure compatibility with relational storage while enabling flexible data handling.
+- [x] Simplify retrieval and conversion of complex objects.
+- [x] Maintain backward compatibility with legacy data structures.
+
+Type adaptors must be **registered and available at the time of schema declaration** and maintained continually for data operations to ensure compatibility.
+Generally, revisions of adaptors must maintain backward compatibility.
+They are implemented as classes subclassing from `dj.CustomType` and must implement the following methods:
+1. `type_name` (property) → str -- returns the name by which the
+1. `stored_type` (property str)  -- returns the **underlying storage type** (e.g. `blob`, `file`, or another `<adoptor_name>`)
+2. `put(self, key, user_object) -> stored_object`
+3. `get(self, key, stored_object) -> user_object`
+
+The custom type is activated by registering it with the DataJoint client
+
+```python
+dj.register_type(CustomType)
+```
+
+
+**Example Type Adaptors**
+
+| **`type_name`** | **`stored_type`** | **Purpose** |
+|------------|--------------|-------------|
+| `<dj_blob>` | `blob` | Converts arbitrary Python structures into a `blob`, ensuring backward compatibility. |
+| `<zarr2p>` | `file` | Converts two-photon imaging data into compressed Zarr objects. |
+| `<dj_npy>` | `file` | Serializes Python objects into Numpy-compatible files. |
+
+
+Custom types typically implemented in separate modules and loaded as [Python plugins](https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/)
+
+Example type adaptors:
+
+- `<djblob>` - (core type: `blob`), converts an arbitrary python structure into a blob type, backward-copmatible with legacy blobs. Old blobs become
+- `<zarr2p>` - (core type: `file`), converts two-photon movies into compressed zarr objects
+- `<numpy-npy>` - (core type: `file`), converts numpy array into a npy file :w
+- `<numpy-zarr>` - (core type: `file`), converts numpy array into a zarr object
+
+### Using a CustomType in a DataJoint Table
+Once implemented, a type adaptor can be used in a DataJoint table by specifying it in a field definition
+
+```python
+class Specimen(dj.Manual):
+    definition = """
+    specimen_id : uint16
+    ---
+    specimen_data : <dj_blob>  # uses BlobType to store images in the database
+    specimen_image : <dj_bioformats>  # stores image using Bio-Formats
+    """
+```
+At insert time, the inserted value is supplied into the constructor of the registered `dj.CustomType`:
+
+```python
+Speciman.insert1({
+    'specimen_id': 103,
+    'specimen_data': {'preparer': 'John'},
+    'specimen_image', '/data/raw_img001.czi'})
+```
+
+## Master-Part Relationship
+
+### Ensuring Group Integrity
+
+In many cases, **multiple related records must appear together or not at all**. For example:
+- A **billing system** must ensure that a bill is stored **with all its line items**.
+- A **segmentation algorithm** must record an image **along with all identified regions**.
+
+To enforce **group integrity**, DataJoint provides the **master-part pattern**—a construct that ensures **atomic insertion and deletion** of related data entries.
+
+### Master-Part Pattern
+
+A **master table** represents the **primary entity**, while **part tables** store dependent attributes that must always appear together with their master entry.
+
+- **Master tables** are declared as standard DataJoint tables and can be of any tier.
+- **Part tables** are defined as **nested classes** within the master table.
+- The **full class name** follows the format:
+  ```
+  module.MasterClass.PartClass
+  ```
+- The **database table name** also embeds the master and part name.
+- The **part table always has a foreign key** to its master table.
+
+To simplify this relationship, DataJoint provides the alias `-> master` in part table definitions, automatically establishing a **foreign key link**.
+
+### Restriction: A Part Table Cannot Be a Master Table
+A **part table cannot serve as a master table** for another part table. The master-part relationship **cannot be nested**.
+Nor can a part table have two masters.
+- **Each part table belongs exclusively to a single master table.**
+- **Part tables cannot contain additional part tables.**
+- **For hierarchical relationships, use additional master tables with separate part tables instead.**
+
+
+**Example: Cell Segmentation with a Master-Part Relationship**
+
+The following example demonstrates a **segmentation pipeline**, where `Segmentation` serves as the **master table**, and `Segmentation.Region` captures **all segmented regions** for each image.
+
+```python
+@schema
+class Segmentation(dj.Computed):
+  definition = """
+  -> acq.Image
+  -> SegmentationMethod
+  ---
+  segmented_image : <nparray>
+  number_regions  : uint16
+  """
+
+  class Region(dj.Part):
+      definition = """
+      -> master     #  foreign key to Segmentation
+      region_idx : uint16  # differentiates regions within the segmentation
+      ---
+      region_pixels  : <nparray>
+      region_weights : <nparray>
+      """
+```
+
+Key characteristics of this master-part example:
+- [x] Ensures atomic transactions – A segmentation entry and all its regions are inserted and deleted together.
+- [x] Maintains referential integrity – Part records cannot exist without a corresponding master record.
+- [x] Simplifies queries – The `-> master` alias simplifies the definition of the foreign key.
+
+### Enforcement via Transaction Processing
+When using the master-part pattern, DataJoint guarantees:
+
+- Insertion is atomic – The master entry and all its parts are inserted in a single transaction.
+- Deletion is cascaded – Removing a master entry automatically deletes all its parts.
+- No nested parts – A part table cannot serve as a master table for another part.
+
+This mechanism eliminates orphaned records, ensuring data consistency and integrity in relational workflows.
+
+---
+# Diagram
+DataJoint comes with a formally-defined diagramming notation implemented by the `dj.Diagram` class.
+The pipeline is visualized as a **Directed Acyclic Graph** with nodes corresponding to classes and edges corresponding to foreign key dependencies between them.
+The tables are grouped by their schemas, which, in turn, also form a DAG, where edges bundle all the foreign key from the child schemas to the parent schemas.
+The diagram is always depicted with the data moving top-to-bottom (foreign keys referencing upward) or left-to-right (foreign keys referencing leftward).
+
+`dj.Diagrams` are graph objects  and support an algebra of graph operations: union, intersection. (Elaborate: what's the operation to include one layer of nodes upstream or downstream?) .
+
+The nodes are colored according to their [table tier](#table tiers).
+
+
+
 
 ---
 # Object Storage
-DataJoint combines **relational databases** for structured metadata and **object stores** for large scientific datasets.
-The relational database ensures **data integrity, fast querying, and transactional consistency**, while object storage efficiently handles **high-volume, unstructured data** (e.g., images, arrays).
-This hybrid approach **scales seamlessly**, keeping metadata relational while allowing **flexible, distributed storage** for large data objects.
 
+DataJoint integrates **object storage** into its **relational database-driven pipelines** to efficiently manage **large scientific datasets**. Object storage is used for two primary purposes:
+1. **Object-Augmented Schemas** – Storing large, unstructured data (e.g., images, time series) externally while keeping structured metadata in the database.
+2. **Database Backup & Export** – Providing a structured, shareable repository of pipeline data.
 
-## Object Management
-In DataJoint tables, the `object` datatype enables **object-augmented schemas**, where structured metadata resides in a relational database, while large scientific data objects are stored externally.
-This integration allows **structured tabular data** to reference **large, complex data structures** (e.g., multidimensional arrays, images, time series).
+## Object-Augmented Schemas
 
-Objects are managed similarly to other database attributes but are stored in a **configurable storage backend**, using a structured key-naming convention.
-They are created and accessed through standard **DataJoint operations**: `insert`, `delete`, and `fetch`.
-Operations on stored objects maintain the **same consistency and integrity guarantees** as data stored in the database.
+A **DataJoint pipeline** follows a **hybrid storage model**, where:
+- The **relational database** manages **structured metadata, dependencies, and transactions**.
+- The **object store** handles **large, unstructured scientific data** (e.g., images, multidimensional arrays).
 
-
-A DataJoint client is configured to access the **storage backend** associated with each database.
-For each **insert** and **fetch** operation, the client **constructs a structured key** for object fields.
-The corresponding **database entry** stores metadata such as:
-- **Object key (structured reference to the stored object)**
-- **File format/extension**
-- **Size**
-- **Checksum (for integrity verification)**
-- **Tags (for metadata indexing and lookup)**
-
-The **organizational structure of stored objects is configurable**, allowing **logical partitioning** based on primary key attributes.
+This **scalable approach** maintains **fast querying, data integrity, and transactional consistency**, while enabling **flexible, distributed storage** of large datasets.
 
 
 ## Storage Backend Configuration
-A DataJoint client is configured to access the storage backend associated with each database.
-For each insert and fetch operation, the client constructs the relative path for the file fields.
-The database entry for the file type stores metadata such as file extension, size, checksum, and tags.
-The structure is configurable as part of the storage backend configuration.
 
-### **Example Structured Object Storage Pattern**
+A DataJoint client is configured to access the **storage backend** associated with each database. Supported backends include:
+- **Local storage** – POSIX-compliant file systems (e.g., NFS, SMB).
+- **Cloud-based object storage** – Amazon S3, Google Cloud Storage, Azure Blob, MinIO.
+- **Hybrid storage** – Combining local and cloud storage for flexibility.
 
-A typical storage structure follows a **structured key-naming convention**, maintaining logical organization:
+DataJoint uses **[`fsspec`](https://filesystem-spec.readthedocs.io/en/latest/)** to ensure compatibility across multiple storage backends.
 
-```bash
+## Example Structured Storage Pattern
+
+A *DataJoint project* creates a structured hierarchical storage pattern:
+```
 📁 project_name/
 ├── datajoint.toml
 ├──📁 schema_name1/
@@ -482,52 +682,38 @@ A typical storage structure follows a **structured key-naming convention**, main
 │  │   ├── table1-field2/key3-value3.gif
 ...  ...
 ```
-When using object storage, the corresponding object keys might be:
+
+When using object storage, the corresponding keys might be:
 ```
 s3://project_name/schema_name3/objects/table1/key1-value1.parquet
 s3://project_name/schema_name3/fields/table1-field1/key3-value3.zarr
 ```
+The **organizational structure of stored objects** is configurable, allowing partitioning based on **primary key attributes**.
 
-This structured naming approach allows:
-* Scalable organization (even in flat object storage systems).
-* Efficient indexing and retrieval using key-based lookups.
-* Cross-platform compatibility across file systems and cloud object stores.
-
-This file hierarchy serves to store a complete copy of the tabular relational data in the `tables` subfolder and the contents of the file fields in the fields subfolder.
-The table name, field name, and primary key attributes form the path using a configurable pattern.
-Several options are available for partitioning this file repository based on the values of a specific subset of primary key attributes.```
-
-The `datajoint.toml` configuration file is essential for setting up a DataJoint store to support a project.
-It defines the repository's organization, and key information within this file should remain unchanged after data population to avoid issues with existing data.
-
-## Partitioning
-The storage backend configuration supports logical partitioning, allowing DataJoint to organize stored objects using a structured key pattern.
-For example, configuring partitioning in datajoint.toml:
-```
+Example configuration in `datajoint.toml`:
+```toml
 # Configuration for object storage
 [object_storage]
 partition_pattern = "subject{subject_id}/session{session_id}"
 ```
-
-Here:
-* `[object_storage]` defines settings for storage backend configuration.
-* `partition_pattern` dynamically replaces placeholders `({subject_id}, {session_id})` with actual values during object storage operations.
-
+This structure dynamically replaces placeholders {`subject_id`} and {`session_id`} with actual values.
+**Example Stored Objects with Partitioning**
 ```
-s3://my-bucket/subject123/session45/image1.tiff
-s3://my-bucket/subject124/session46/image2.tiff
+s3://my-bucket/project_name/subject123/session45/schema_name3/objects/table1/key1-value1/image1.tiff
+s3://my-bucket/project_name/subject123/session45/schema_name3/objects/table2/key2-value2/movie2.zarr
 ```
-This logical organization improves data navigation and retrieval while maintaining compatibility with object storage paradigms.
 
-## File Operations
-The DataJoint client uses protocols such as [`fsspec`](https://filesystem-spec.readthedocs.io/en/latest/), supporting various storage backends.
-During insertion, a field of type `file` expects a bytestream or a callback function that accepts a path as its argument and writes its contents to that path.
-The DataJoint client constructs the file structure and hierarchy according to the specied configuration.
+This structured naming approach allows:
+* Efficient indexing & retrieval using key-based lookups.
+* Scalable organization across flat object storage systems.
+* Cross-platform compatibility with both file systems & cloud storage.
 
 ## Export, Sharing, and Backup/Restore
-The structured project data folder serves as a comprehensive, publishable copy of the data, accessible and querying  by DataJoint and  other tools.
-It is designed for both human navigation and tool accessibility.
-The Schema Diagram object provides methods for selecting portions of the data for export, including specific tables and data slices.
+The structured project data repository serves as a comprehensive, publishable copy of the dataset, accessible by DataJoint and other tools.
+
+- Designed for human navigation & automated tools.
+- Supports exporting portions of the dataset (specific tables, time ranges).
+- Enables easy backup & migration of scientific workflows.
 
 The export method recreates the data repository in full at another location.
 DataJoint offers tools to restore the database from the file repository using the tabular data, supporting data publishing and pipeline cloning alongside the data.
@@ -683,6 +869,8 @@ Fetching is the process of executing the qeury transferring query results from t
 
 ### Restriction by a Subquery
 
+### Restriction by `dj.Top`
+
 ## Projection
 `A.proj(...)`
 
@@ -720,5 +908,127 @@ If the tables `A` and `B` have attributes with the same names but do not trace t
 
 -----------
 # Computation
+DataJoint integrates **computation directly into its data model**, similar to how spreadsheets update **formula-driven cells** when inputs change.
+Some tables are designated for **automated computations**, meaning:
+- **Users cannot manually insert data** into these tables.
+- **Results are generated automatically** based on predefined computations.
+- **New inputs trigger cascaded computations** of dependent results.
 
+This ensures **data consistency, integrity, and reproducibility** throughout the pipeline.
 
+## The `make` Method: Defining Computation
+
+Auto-populated tables must implement the `make(self, key)` method, which defines **how computations are performed**.
+
+**Method Signature**:
+```python
+def make(self, key, **make_opts) -> None:
+```
+The `make` method consists of three essential steps:
+1. `Fetch`: Retrieve input data from upstream tables based on key.
+2. `Compute`: Process the retrieved data to generate new results.
+3. `Insert`: Store the computed results using self.insert1().
+
+DataJoint implements computation as a native part of its data model.
+In a sense, it's quite similar to spreadsheets where some cells contain values and other cells represent formulas.
+New inputs causes an automated and cascaded computations of new results.
+In DataJoint's some tables are designated for automated computations.
+This means that users cannot simply insert data into them.
+Data must be calculator according to a computation that the table class specifies.
+
+**Example: Computing an Average Signal**
+```python
+@schema
+class ProcessedSignal(dj.Computed):
+    definition = """
+    -> RawSignal
+    ---
+    avg_signal: float
+    """
+
+    def make(self, key):
+        # Step 1: Fetch input data
+        raw_data = (RawSignal & key).fetch1("signal")
+
+        # Step 2: Compute the result
+        avg_value = raw_data.mean()
+
+        # Step 3: Insert the computed result
+        self.insert1({**key, "avg_signal": avg_value})
+```
+This approach ensures that computations are traceable and reproducible, with outputs always linked to their inputs.
+
+Each make call runs inside an ACID-compliant transaction, ensuring:
+
+* **Computational integrity** – Results are correctly referenced to inputs.
+* **Atomic execution** – Either the computation fully completes, or no partial data is stored.
+
+## Handling Long-Running Computations
+For long-running computations (e.g., processing large datasets for hours or days), holding a continuous database transaction can block critical operations. To mitigate this, DataJoint supports deferred transaction verification, where:
+
+* Computation is performed outside the transaction.
+* Inputs are re-verified inside a minimal transaction.
+
+This is done by splitting make into three methods:
+
+1. `make_fetch(key)`: Retrieves input data before computation.
+2. `make_compute(key, fetched)`: Performs computation outside the transaction.
+3. `make_insert(key, fetched, computed)`: Re-fetches and verifies inputs, then inserts results in a transaction.
+
+**Pseudocode for Deferred Transaction Handling:**
+```
+fetched = self.make_fetch(key)
+computed = self.make_compute(key, fetched)
+
+begin transaction
+fetched_again = self.make_fetch(key)
+
+if fetched != fetched_again:
+    rollback transaction
+else:
+    self.make_insert(key, fetched, computed)
+    commit transaction
+```
+
+- This **minimizes transaction time** while ensuring input data remains unchanged between `fetch` and `insert`.
+- The **trade-off** is fetching the input data **twice**, but this prevents blocking database operations.
+
+## Key Source: Determining What Needs to Be Computed
+The **key source** defines which entries **require computation**.
+* It is automatically determined by DataJoint.
+* It is formed as the join of all tables referenced by foreign keys in the table’s primary key.
+* Existing computed entries are excluded, ensuring only new computations are performed
+
+### Example: Understanding Key Source
+Consider a computed table that processes images recorded by different methods:
+```python
+@schema
+class ProcessedImage(dj.Computed):
+    definition = """
+    -> acq.Image
+    -> ProcessingMethod
+    ---
+    processed_data: blob
+    """
+```
+The key source in this case is:
+```python
+acq.Image.proj() * ProcessingMethod.proj() - ProcessedImage
+```
+
+## Computed vs Imported Tables
+
+| **Tier** | **Purpose** | **Reproducibility** | **Data Source** |
+|---|---|---|---|
+| **Computed (`dj.Computed`)** | Fully reproducible computations | ✅ Guaranteed | Uses only **pipeline data** |
+| **Imported (`dj.Imported`)** | Data ingested from external sources | ❌ Not guaranteed | Reads from **external sources (e.g., instruments, APIs)** |
+
+## Summary of automated computing
+- **DataJoint integrates computation directly into its data model**, similar to how spreadsheets update formulas when inputs change.
+- **Computation tables** (`Computed` and `Imported`) must define a `make(self, key)` method to handle data processing.
+- The key source automatically determines which entries need computation.
+- Computed tables ensure full reproducibility, while imported tables depend on external sources.
+- For long-running computations, DataJoint supports transaction handling to prevent database locking, where the `make` method needs to be split into three parts: `make_fetch`, `make_compute`, and `make_insert`.
+- DataJoint ensures **atomic transaction processing**, preventing incomplete computations.
+
+By structuring computation within DataJoint pipelines, researchers can build efficient, reproducible, and scalable data workflows.
