@@ -14,7 +14,7 @@ By following the **DataJoint Specs**, users and developers can:
 - Provide a **foundation for future enhancements** while preserving backward compatibility.  
 
 ## License
-The licensing for the specs is under review. **Please inquire before contributing or copying.**  
+This project, including the DataJoint Specification document, is licensed under the [CC BY-SA 4.0 License](LICENSE.md).
 
 
 ## Communicating version compatibility
@@ -33,8 +33,8 @@ Each implementation release may claim which Specs verrsion it supports. For exam
 ```
 
 ## Specifications
-- **[Version 2.0](SPECS_2_0.md)** – Draft (Estimated Acceptance: 2025-04-01)
-
+- **[Version 2.0](SPECS_2_0.md)** – Accepted 2025-06-01
+- **[Version 2.1](SPECS_2_1.md)** – Draft (Estimated Acceptance: 2025-09-01)
 
 ## DataJoint-Specs Enhancement Proposals (DSEPs)  
 * [DSEP Process](DSEP_process.md)
