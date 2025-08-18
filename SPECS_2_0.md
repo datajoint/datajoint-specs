@@ -474,7 +474,7 @@ The following core attribute types SHALL be supported by DataJoint implementatio
 
 | Category            | Type                                       | Description                                                                                                                               |
 | :------------------ | :----------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
-| **UUID** | `uuid`                                     | Universally Unique Identifier (RFC 4122). Default values are not supported for `uuid` attributes.                                           |
+| **UUID** | `uuid`                                     | Universally Unique Identifier (RFC 9562). Default values are not supported for `uuid` attributes.                                           |
 | **Integers** | `int8`, `uint8`, `int16`, `uint16`,<br>`int32`, `uint32`, `int64`, `uint64` | Standard signed and unsigned integer types of varying bit widths.                                                                      |
 | **Floating-Point** | `float32`, `float64`                       | Single-precision (32-bit) and double-precision (64-bit) floating-point numbers. Note: `NaN` (Not a Number) behavior MAY vary by backend; e.g., MySQL does not natively support `NaN` in indexed `FLOAT` columns. |
 | **Decimal** | `decimal(M,N)`                             | Fixed-point decimal number with a total precision of `M` digits and `N` digits after the decimal point (scale).                             |
