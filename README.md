@@ -1,5 +1,15 @@
 # DataJoint Specs
 
+> **Notice: Repository Transition**
+>
+> This repository is being archived. The DataJoint Specifications are migrating to [datajoint-docs](https://github.com/datajoint/datajoint-docs) as part of the unified documentation site at [docs.datajoint.com](https://docs.datajoint.com).
+>
+> **What's changing:**
+> - Specifications → `datajoint-docs/src/reference/specs/`
+> - DSEP process → GitHub Discussions RFC process in [datajoint-python](https://github.com/datajoint/datajoint-python/discussions) and [datajoint-docs](https://github.com/datajoint/datajoint-docs/discussions)
+>
+> See the [Contributing Guide](https://docs.datajoint.com/about/contributing/) for the new RFC process.
+
 ## Purpose
 
 This repo manages the DataJoints Specs.
@@ -36,6 +46,10 @@ Each implementation release may claim which Specs verrsion it supports. For exam
 - **[Version 2.0](SPECS_2_0.md)** – Accepted 2025-06-01
 - **[Version 2.1](SPECS_2_1.md)** – Draft (Estimated Acceptance: 2025-09-01)
 
-## DataJoint-Specs Enhancement Proposals (DSEPs)  
-* [DSEP Process](DSEP_process.md)
-* DSEP Template [DSEP-xxx](DSEP/DSEP-xxx.md)
+## DataJoint-Specs Enhancement Proposals (DSEPs)
+
+> **Deprecated:** The DSEP process is being replaced by GitHub Discussions RFCs.
+> See the [Contributing Guide](https://docs.datajoint.com/about/contributing/) for the new process.
+
+* [DSEP Process](DSEP_process.md) *(deprecated)*
+* DSEP Template [DSEP-xxx](DSEP/DSEP-xxx.md) *(deprecated)*
